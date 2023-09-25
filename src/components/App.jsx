@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import css from './App.module.scss';
+import { nanoid } from 'nanoid';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/Contactlist';
 import { Filter } from './Filter/Filter';
@@ -15,7 +16,21 @@ export class App extends Component {
     filter: '',
   };
 
-  handleAddContact = newContact => {
+  handleAddContact = (name, number) => {
+    const isNameExists = this.state.contacts.some(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (isNameExists) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+
+    const newContact = {
+      id: nanoid(),
+      name: name,
+      number: number,
+    };
     this.setState(prevState => ({
       contacts: [...prevState.contacts, newContact],
     }));
@@ -41,10 +56,7 @@ export class App extends Component {
     return (
       <div className={css.container}>
         <h1>Phonebook</h1>
-        <ContactForm
-          contacts={this.state.contacts}
-          onAddContact={this.handleAddContact}
-        />
+        <ContactForm onAddContact={this.handleAddContact} />
         <h2>Contacts</h2>
         <Filter filter={filter} onFilterChange={this.handleFilterChange} />
         <ContactList
